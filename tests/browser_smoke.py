@@ -1,5 +1,6 @@
 """Offline DOM smoke test: python tests/browser_smoke.py. No real network allowed."""
 import json
+import os
 import subprocess
 from pathlib import Path
 from playwright.sync_api import sync_playwright
@@ -16,7 +17,7 @@ DATA={'MISSIONS':MISSIONS,'DIFFICULTIES':[
     {'id':'felfedezo','name':'Felfedező','icon':'🌱','description':'Rövidebb válaszlista, induló segítség, három egyszerű párosítás.'},
     {'id':'nyomozo','name':'Nyomozó','icon':'🔎','description':'Önálló megoldás, kérhető segítség, teljes válaszlista.'},
     {'id':'tortenesz','name':'Történész','icon':'⭐','description':'Minden válaszlehetőség, segítség külön kérésre.'}],
-      'GAME_VERSION':'1.0.0'}
+      'GAME_VERSION':'1.1.0'}
 JS=ROOT.joinpath('app.js').read_text().replace(
     "import { MISSIONS, DIFFICULTIES, GAME_VERSION } from './data.js';",
     'const { MISSIONS, DIFFICULTIES, GAME_VERSION } = '+json.dumps(DATA,ensure_ascii=False)+';')
@@ -62,6 +63,8 @@ with sync_playwright() as p:
   browser=p.chromium.launch(headless=True,executable_path='/usr/bin/chromium',args=['--no-sandbox'])
   errors=[]
   for level in ['felfedezo','nyomozo','tortenesz']:
+    if os.environ.get('SKIP_FULL')=='1': continue
+    if os.environ.get('TEST_LEVEL') and os.environ['TEST_LEVEL']!=level: continue
     page=browser.new_page(viewport={'width':1280,'height':850})
     page.on('pageerror',lambda err:errors.append(str(err)))
     mount_game(page)
@@ -85,13 +88,13 @@ with sync_playwright() as p:
       assert page.get_by_text('időkapu teljesítve',exact=False).first.is_visible()
       page.locator('[data-action="next-stage"]').click()
     assert page.get_by_text('Gratulálunk, időutazó!').is_visible()
-    assert page.get_by_text('300 / 300 pont').count()>0, f'Score {level}'
+    assert page.get_by_text('540 / 540 pont').count()>0, f'Score {level}'
     page.evaluate('window.print=()=>{window.__printWasCalled=true}')
     page.locator('[data-action="print"]').click()
     assert page.evaluate('window.__printWasCalled===true'), 'print did not activate'
     page.screenshot(path=f'/tmp/idougras-finish-{level}.png',full_page=True)
     page.close()
-    print(f'PASS all 30 tasks, scoring and simulated save/reload: {level}')
+    print(f'PASS all 54 tasks, scoring and simulated save/reload: {level}')
 
   # Negative answers, support and partial-credit behavior
   errors_page=browser.new_page(viewport={'width':1024,'height':768})
@@ -115,14 +118,75 @@ with sync_playwright() as p:
   errors_page.locator(f'[data-action="select"][data-id="{q2["answer"]}"]').click()
   errors_page.locator('[data-action="check"]').click()
   assert errors_page.get_by_text('+7 időenergia').is_visible()
-  assert errors_page.get_by_text('14 / 300').count()>0
+  assert errors_page.get_by_text('14 / 540').count()>0
   errors_page.close()
   print('PASS incorrect answer, retry, optional hint and partial points')
+
+
+  # Korábbi v1.0.0 mentés: az öt állomás teljesítve -> az új hatodik időkapunál folytatódik.
+  legacy={"idougras-1941-v1-progress":json.dumps({
+    'version':'1.0.0','screen':'complete','difficulty':'felfedezo','largeText':False,
+    'stageIndex':4,'questionIndex':6,'completed':[0,1,2,3,4],
+    'score':300,'stagePoints':60,'stageScores':{'poland':60,'france':60,'britain':60,'east':60,'pearl':60},
+    'answeredCount':30,'lastAward':10,'attempts':0,'hintUsed':False,'runSeed':7
+  },ensure_ascii=False)}
+  old=browser.new_page(viewport={'width':900,'height':750})
+  mount_game(old,legacy)
+  assert old.get_by_text('Midway – fordulat a tengeren').first.is_visible()
+  assert old.locator('.stat').first.inner_text().find('300 / 540')!=-1
+  old.locator('[data-action="start-stage"]').click()
+  assert old.get_by_text(MISSIONS[5]['questions'][0]['question']).is_visible()
+  old.close()
+  print('PASS v1.0.0 completed save migrates into the sixth stage')
+
+  # Csak új anyag mód: 4 küldetés, 24 feladat, és a régi mentés érintetlen marad.
+  new=browser.new_page(viewport={'width':900,'height':750})
+  mount_game(new)
+  new.locator('[data-action="switch-mode"][data-id="new"]').click()
+  assert new.get_by_text('24 feladat').count()>0
+  new.locator('[data-action="begin"]').click()
+  assert new.get_by_text('Midway – fordulat a tengeren').first.is_visible()
+  new.locator('[data-action="start-stage"]').click()
+  solve_question(new,MISSIONS[5]['questions'][0])
+  mem=new.evaluate('localStorage.dump()')
+  assert 'idougras-1941-v1-new-progress' in mem
+  assert json.loads(mem['idougras-1941-v1-progress'])['answeredCount']==0
+  assert json.loads(mem['idougras-1941-v1-new-progress'])['answeredCount']==1
+  new.reload() if False else None
+  resumed=browser.new_page(viewport={'width':900,'height':750})
+  mount_game(resumed,mem)
+  assert resumed.get_by_text(MISSIONS[5]['questions'][1]['question']).is_visible()
+  resumed.locator('[data-action="switch-picker"]').click()
+  resumed.locator('[data-action="switch-mode"][data-id="full"]').click()
+  assert resumed.get_by_text('Üdv az időgép fedélzetén!').is_visible()
+  assert 'idougras-1941-v1-new-progress' in resumed.evaluate('localStorage.dump()')
+  resumed.close()
+  new.close()
+  print('PASS standalone new-content mode, saving, resuming, mode switching')
+
+  # Teljes csak-új-anyag útvonal: mind a 24 könnyű feladat és a külön zárólap.
+  quick=browser.new_page(viewport={'width':950,'height':800})
+  quick.on('pageerror',lambda err:errors.append(str(err)))
+  mount_game(quick)
+  quick.locator('[data-action="switch-mode"][data-id="new"]').click()
+  quick.locator('[data-action="begin"]').click()
+  for stage in MISSIONS[5:]:
+    quick.locator('[data-action="start-stage"]').click()
+    for q in stage['questions']: solve_question(quick,q)
+    quick.locator('[data-action="next-stage"]').click()
+  assert quick.get_by_text('Gratulálunk, időutazó!').is_visible()
+  assert quick.get_by_text('240 / 240 pont').count()>0
+  assert quick.locator('.medal').count()==4
+  quick.close()
+  print('PASS complete 24-question new-material track, points, medals, final screen')
 
   mobile=browser.new_page(viewport={'width':390,'height':844},device_scale_factor=1)
   mobile.on('pageerror',lambda err:errors.append(str(err)))
   mount_game(mobile)
   mobile.screenshot(path='/tmp/idougras-mobile.png',full_page=True)
+  mobile.locator('[data-action="switch-mode"][data-id="new"]').click()
+  assert mobile.evaluate('document.documentElement.scrollWidth <= window.innerWidth'),'mobile new mode horizontal overflow'
+  mobile.locator('[data-action="switch-mode"][data-id="full"]').click()
   mobile.locator('[data-action="font"]').click()
   mobile.locator('[data-action="begin"]').click()
   mobile.locator('[data-action="start-stage"]').click()

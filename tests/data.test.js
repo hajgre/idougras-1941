@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { MISSIONS, DIFFICULTIES } from '../data.js';
+import { MISSIONS, DIFFICULTIES, GAME_VERSION } from '../data.js';
 
-test('5 küldetés, küldetésenként pontosan 6 kérdés',()=>{
-  assert.equal(MISSIONS.length,5);
+test('9 küldetés, küldetésenként pontosan 6 kérdés',()=>{
+  assert.equal(MISSIONS.length,9);
   for(const m of MISSIONS)assert.equal(m.questions.length,6);
 });
 test('minden küldetésben öt feladattípus',()=>{
@@ -39,6 +39,14 @@ test('egyedi kérdésazonosítók, érvényes válaszkulcsok, hibátlan felépí
     }
   }
   assert.equal(new Set(ids).size,ids.length);
-  assert.equal(ids.length,30);
+  assert.equal(ids.length,54);
   assert.equal(DIFFICULTIES.length,3);
+});
+
+test('az új anyag elkülönül, az első öt állomás megmarad',()=>{
+  assert.equal(GAME_VERSION,'1.1.0');
+  assert.deepEqual(MISSIONS.slice(0,5).map(m=>m.id),['poland','france','britain','east','pearl']);
+  assert.deepEqual(MISSIONS.slice(5).map(m=>m.id),['midway','alamein','stalingrad','civilians']);
+  assert.ok(MISSIONS.slice(5).every(m=>m.isNew === true));
+  assert.equal(MISSIONS.slice(5).reduce((sum,m)=>sum+m.questions.length,0),24);
 });

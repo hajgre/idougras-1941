@@ -12,3 +12,10 @@
 }
 .sidebar,.side-card,.stage-list{min-width:0}
 @media(max-width:650px){.stage-list{width:100%;max-width:100%}}
+
+/* v1.1.0 – Tananyagválasztó, rövid nyitóválasztó, mobilon is jól tördelhető. */
+.mode-tip{margin:18px 0 12px;padding:18px;border:1px solid rgba(134,206,232,.28);border-radius:18px;background:rgba(21,36,65,.58)}
+.mode-tip>strong{display:block;margin:0 0 10px;color:#eff9ff} .mode-tip .hero-actions{margin:0;display:flex;gap:10px;flex-wrap:wrap}
+.mode-tip .hero-actions .btn{white-space:normal;text-align:center;flex:1 1 220px;min-height:54px}
+.mode-tip .small-note{margin:10px 0 0;line-height:1.45}
+@media(max-width:560px){.mode-tip{padding:14px}.mode-tip .hero-actions .btn{flex-basis:100%}}

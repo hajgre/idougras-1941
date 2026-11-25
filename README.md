@@ -1,88 +1,77 @@
-# IDŐUGRÁS – Küldetés: 1941
+# IDŐUGRÁS – 1939–1943
 
-**Verzió:** 1.0.0  
-**Tantárgy:** Történelem, TANAK 8.  
-**Téma:** Második világháború 1939-től Pearl Harborig (1941. december 7.)
+**Verzió:** 1.1.0 (2026-11-25)  
+**Célcsoport:** Történelem, TANAK 8.  
+**Repo / élő weboldal:** https://hajgre.github.io/idougras-1941/
 
-Önálló, reszponzív és ingyenesen használható oktatójáték. Nincs külső JavaScript-könyvtár, regisztráció, API-kulcs, adatbázis vagy előfizetés.
+Egyszerű, ingyenes böngészős történelemjáték. Regisztráció, személyes adatok, külső JS-könyvtárak, API-kulcsok és adatbázis nélkül működik.
 
-## Mit tartalmaz?
+## Választható tanulási utak
 
-- 5 történelmi időkapu: 1939 Lengyelország, 1940 nyugati hadjárat, 1940 angliai csata, 1941 keleti front, 1941 Pearl Harbor.
-- 30 ellenőrzött, változatos feladat: egyválaszos és többválaszos kérdés, igaz–hamis, sorrendezés, párosítás.
-- 3 támogatási szint: **Felfedező**, **Nyomozó**, **Történész**.
-- Változó válaszsorrend új játék indításakor, kérhető segítség, magyar szövegfelolvasás, nagyítható betűk, pontgyűjtés és történelmi pecsétek.
-- Helyben mentett haladás, idővonalas összefoglaló, nyomtatható zárólap.
-- Részletes tanári útmutató: `tanari-utmutato.html`.
+- **Teljes időutazás (1939–1943):** 9 időkapu, 54 feladat. Az első 5 időkapu mind a 30 eredeti feladatával változatlanul megmaradt.
+- **Csak az új anyag (1942–1943):** 4 időkapu, 24 könnyű, bemutató szöveggel kezdődő feladat.
+- Az új időkapuk: **Midway, El-Alamein, Sztálingrád, Civilek és üldöztetés**.
+- Megmaradt az 5 feladattípus (egyválaszos, igaz–hamis, időrend, párosítás, többválaszos), három segítségi szint, véletlen sorrendű válaszlehetőség, felolvasás (böngészőfüggő), betűnagyítás, pontok, pecsétek és nyomtatás.
+- Az új feladatok rövidek, és a megfelelő időkapuk elején az új tananyagot összefoglaló ismertető olvasható.
 
-## GitHub Pages – telepítés
+## Frissítés a meglévő GitHub-repositoryban
 
-1. A ZIP-et **csomagold ki**. Hozz létre egy új, nyilvános GitHub repositoryt, például `idougras-1941` néven.
-2. A **kicsomagolt fájlokat és mappákat** (nem a ZIP-et) töltsd fel a repository gyökerébe. Az `index.html` közvetlenül a gyökérben legyen.
-3. GitHub: **Settings → Pages → Build and deployment → Deploy from a branch → main / (root) → Save**.
-4. A közzétett cím tipikusan: `https://FELHASZNALONEV.github.io/idougras-1941/`. A GitHub-felhasználónév és a repository neve eltérhet.
-5. Nyisd meg a weboldalt mobilon és asztali böngészőben; ellenőrizd az első feladatot és a mentést.
+**Ne hozz létre új repositoryt.** A már működő `hajgre/idougras-1941` repositoryt használd.
 
-**Fontos:** a projektet nem kell a már működő matekjáték-repositoryba tenni, és nem szükséges meglévő fájlokat felülírni. A jelen csomag *önálló új játék*.
+1. Biztonsági mentés: a GitHub repository **Code → Download ZIP** menüjében töltsd le a jelenlegi állapotot. Ezt külön őrizd meg.
+2. Az új kiadási ZIP-et csomagold ki a számítógépen, és a benne lévő **fájlokat/mappákat**, ne magát a ZIP-et, töltsd fel a meglévő repository gyökerébe a **Code → Add file → Upload files** menüben. Az azonos nevű fájlokat cseréld le; az `index.html` a gyökérben maradjon.
+3. Commit üzenet: `feat: IDŐUGRÁS v1.1.0 – 1942–1943 új időkapuk`
+4. GitHub Pages beállítás maradjon **main / (root)**. Ne töröld a régi repositoryt, ne változtasd meg a közzétételi címet.
+5. Nyisd meg: https://hajgre.github.io/idougras-1941/ . Ha a régi változat látszik, frissítsd a böngészőt (Ctrl+F5), majd nézd meg az anyagválasztót.
 
-## Helyi futtatás
+**Visszaállítás:** a mentett előző ZIP-ből töltsd vissza a korábbi fájlokat. Így a régi játékfájlok visszaállnak. A böngészőben tárolt új eredmények kompatibilitása visszalépéskor nem garantált; a v1.0.0 mentés kulcsa változatlan maradt.
 
-Az ES module-ok miatt érdemes helyi kiszolgálóval megnyitni (nem egyszerű `file://` kattintással):
+## Mentés és kompatibilitás
+
+- A v1.0.0 teljes játékának mentési kulcsa változatlan: `idougras-1941-v1-progress`. A v1.1.0 a korábbi mentésből folytatja a munkát.
+- Ha a tanuló a régi 5 időkaput már befejezte, az új kiadásból a 6. állomásnál (Midway) folytathatja.
+- A külön **„Csak az új anyag”** tanulási út saját helyi mentést és saját legjobb eredményt használ, ezért nem írja felül a teljes játék haladását.
+- A tárolás böngészőhöz és eszközhöz kötött. Nincs felhőmentés vagy név szerinti tanulói adatgyűjtés.
+- Az új és a régi szint pontszáma nem osztályzat; a segítség, az újrapróbálkozás és a tévedés megengedett.
+
+## Helyi indítás, tesztek
 
 ```bash
-cd idougras-1941
+# a projekt mappájában
 python -m http.server 8000
-```
+# megnyitás: http://localhost:8000
 
-Majd: `http://localhost:8000/`. Ha nincs Python, használható bármilyen statikus fájlkiszolgáló.
-
-## Adatkezelés és mentés
-
-A játék nem továbbít tanulói adatokat, nem kér nevet, nem használ külső elemzőkódot. Csak a helyi böngésző `localStorage` tárolóját próbálja használni; ha nem érhető el, a játék ettől még fut, de újratöltéskor nem őrzi meg a haladást. A mentés eszköz- és böngészőfüggő. Az „Újrakezdés” nem törli a külön tárolt helyi rekordot.
-
-## Módosítás
-
-- `data.js`: az 5 küldetés és a történelmi feladatok.
-- `app.js`: kérdésellenőrzés, pontozás, állapot és képernyők.
-- `styles.css`: megjelenés, reszponzivitás, nyomtatás.
-- `tanari-utmutato.html`: óravezetési javaslatok és szakmai keretek.
-- `tests/`: futtatható automatizált ellenőrzések.
-
-**Frissítésnél:** töltsd le a jelenlegi repositoryt biztonsági mentésként, majd csak a kívánt fájlokat módosítsd. A `localStorage` mentés azonos webhelyen, azonos verzió alatt marad meg. Új adatmodell-verziónál külön migráció lehet szükséges.
-
-## Források a történelmi állításokhoz
-
-- [United States Holocaust Memorial Museum – World War II Key Dates](https://encyclopedia.ushmm.org/content/en/article/world-war-ii-key-dates)
-- [United States Holocaust Memorial Museum – The Holocaust and World War II: Key Dates](https://encyclopedia.ushmm.org/content/en/article/the-holocaust-and-world-war-ii-key-dates)
-- [Royal Air Force – Battle of Britain](https://www.raf.mod.uk/what-we-do/our-history/anniversaries/battle-of-britain/)
-- [United States Holocaust Memorial Museum – 1941: Key Dates](https://encyclopedia.ushmm.org/content/en/article/1941-key-dates)
-- [National WWII Museum – Pearl Harbor](https://www.nationalww2museum.org/war/topics/pearl-harbor-december-7-1941)
-
-## Változásnapló
-
-### v1.0.0 – 2026-11-24
-- Önálló első kiadás, 5 időkapu és 30 feladat.
-- Három szint, pontozás, helyi mentés, nagy betűk, felolvasás.
-- Tanári útmutató, reszponzív felület, nyomtatás és tesztek.
-
-## Ismert korlátok
-
-- Nincs felhőmentés, osztályszintű tanári statisztika vagy tanulói fiók.
-- A magyar gépi felolvasás a böngészőben elérhető hangoktól függ.
-- Az offline használathoz az oldal megnyitásához statikus helyi kiszolgáló szükséges; nem tartalmaz telepíthető PWA-funkciót.
-
-## Fejlesztői tesztek
-
-Az adatmodell automatizált, külső csomagot nem igénylő ellenőrzése (Node.js szükséges):
-
-```bash
 npm test
-```
-
-Opcionális böngészős regressziós teszt (Python, Playwright és telepített Chromium szükséges):
-
-```bash
 python tests/browser_smoke.py
 ```
 
-A mellékelt böngészőteszt a helyi fájlok CSS-ét, HTML-jét és JS-ét hálózat nélkül tölti be egy Chromium lapba, hogy a játéklogika akkor is ellenőrizhető legyen, ha a tesztkörnyezet tiltja a helyi szerverhez történő böngészős hozzáférést. Ez **nem helyettesíti** a GitHub Pages éles telepítési próbáját.
+A böngészős teszthez Python Playwright és helyben telepített Chromium kell (a játék működéséhez nem). A futtatás a `TEST_LEVEL=tortenesz` vagy `SKIP_FULL=1` környezeti változóval szűkíthető. A tényleges méréseket a `TESZTEREDMENYEK.md` rögzíti.
+
+## Történelmi források
+
+- [USHMM – World War II Key Dates](https://encyclopedia.ushmm.org/content/en/article/world-war-ii-key-dates)
+- [National WWII Museum – Battle of Midway](https://www.nationalww2museum.org/war/topics/battle-of-midway)
+- [Imperial War Museums – El-Alamein](https://www.iwm.org.uk/sites/default/files/files/2024-07/churchill_and_the_middle_east_large_print_guide.pdf)
+- [Encyclopaedia Britannica – Battle of Stalingrad](https://www.britannica.com/event/Battle-of-Stalingrad)
+- [USHMM – Introduction to the Holocaust](https://encyclopedia.ushmm.org/content/en/article/introduction-to-the-holocaust)
+- [USHMM – Ghettos](https://encyclopedia.ushmm.org/content/en/article/ghettos)
+
+## Változásnapló
+
+### v1.1.0 – 2026-11-25
+
+- 4 új időkapu, 24 könnyű feladat: Midway, El-Alamein, Sztálingrád, Civilek és üldöztetés.
+- Teljes és csak új anyagos játékmód; elkülönített mentések, dinamikus pont- és feladatszám.
+- Régi v1.0.0 mentések migrálása: a befejezett 1941-es időutazás a 6. kapunál folytatható.
+- Új tanári segítség és bővített automatizált tesztek.
+
+### v1.0.0 – 2026-11-24
+
+- 5 időkapu, 30 feladat, három támogatási szint, helyi mentés, pontozás és tanári útmutató.
+
+## Ismert korlátok
+
+- Nincs osztályszintű statisztika, központi adatbázis vagy tanulói fiók.
+- A gépi felolvasás magyar hangja a böngésző és az eszköz telepített hangjaitól függ.
+- A GitHub Pages-re feltöltött frissítés megjelenését és a tényleges tanórai használatot a feltöltés után még ellenőrizni kell.
+- A holokauszt fogalmainak játékbeli gyakorlását tanári beszélgetés és reflexió egészítse ki; a történelmi üldözés folyamata helyszínenként eltérhetett, és 1943 után is folytatódott.
