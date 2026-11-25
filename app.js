@@ -1,4 +1,4 @@
-import { MISSIONS, DIFFICULTIES, GAME_VERSION } from './data.js';
+import { MISSIONS, DIFFICULTIES, GAME_VERSION } from './data.js?v=110b';
 
 // A két tanulási út külön helyi mentést használ; a v1.0.0 kulcsa változatlan.
 const STORAGE_KEY = 'idougras-1941-v1-progress';
